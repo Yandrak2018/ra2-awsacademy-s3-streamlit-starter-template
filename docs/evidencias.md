@@ -6,7 +6,7 @@
 ## 0) Identificación
 - Alumno/a: Iñaki Elustondo Aebide
 - Grupo:iabd08
-- Variante usada (A/B):A
+- Variante usada (A/B): A
 - Región AWS: Estados Unidos (Norte de Virginia)
 - Bucket S3: proyecto-ra2-aws-s3-streamlit
 
