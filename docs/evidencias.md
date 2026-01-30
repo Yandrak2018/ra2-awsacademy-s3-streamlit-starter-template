@@ -7,8 +7,8 @@
 - Alumno/a: Iñaki Elustondo Aebide
 - Grupo:
 - Variante usada (A/B):
-- Región AWS:
-- Bucket S3:
+- Región AWS: Estados Unidos (Norte de Virginia)
+- Bucket S3: proyecto-ra2-aws-s3-streamlit
 
 ---
 
