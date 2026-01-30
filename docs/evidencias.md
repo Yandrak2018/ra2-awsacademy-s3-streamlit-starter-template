@@ -4,7 +4,7 @@
 > Indica si has usado **Variante A (IAM Role)** o **Variante B (aws configure)**.
 
 ## 0) Identificación
-- Alumno/a:
+- Alumno/a: Iñaki Elustondo Aebide
 - Grupo:
 - Variante usada (A/B):
 - Región AWS:
@@ -13,9 +13,12 @@
 ---
 
 ## 1) S3 privado
-- [ ] Captura del bucket (nombre y región)
-- [ ] Captura/confirmación de que **no es público** (Block Public Access o permisos)
-- [ ] Captura del objeto JSON en `data/sensores/`
+- [ ] Captura del bucket (nombre y región) <img width="1008" height="87" alt="imagen" src="https://github.com/user-attachments/assets/2fa530ad-bf80-489d-8615-ebce31e419f1" />
+
+- [ ] Captura/confirmación de que **no es público** (Block Public Access o permisos) <img width="1895" height="636" alt="imagen" src="https://github.com/user-attachments/assets/e8743402-1037-4237-91ff-1279a615a927" />
+
+- [ ] Captura del objeto JSON en `data/sensores/`<img width="1919" height="606" alt="imagen" src="https://github.com/user-attachments/assets/62acb1d3-de51-428f-bce6-60b84e83cf4e" />
+
 
 **Notas:**
 - Key usada (S3_KEY):
