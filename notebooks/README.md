@@ -12,7 +12,7 @@ Implementar un **pipeline completo**:
    - Tabla de datos filtrada en tiempo real.
    - Gráficas Plotly (Evolución de temperatura y media de CO₂).
    - Mapa de calor de sensores (lat/lon) con extracción de datos anidados.
-   - Despliegue permanente accesible por `http://IP_PUBLICA:8501`.
+   - Despliegue permanente accesible por `[http://IP_PUBLICA:8501](http://13.220.108.238:8501)`.
 
 ---
 
