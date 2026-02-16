@@ -20,9 +20,9 @@ S3_KEY = os.getenv("S3_KEY", "")
 with st.sidebar:
     st.header("Configuración")
     st.write("Configura por variables de entorno (recomendado) o escribe aquí para pruebas.")
-    aws_region = st.text_input("AWS_REGION", value=AWS_REGION, placeholder="eu-west-1")
-    s3_bucket = st.text_input("S3_BUCKET", value=S3_BUCKET, placeholder="mi-bucket-privado")
-    s3_key = st.text_input("S3_KEY", value=S3_KEY, placeholder="data/sensores/iabdXX_sensores.json")
+    aws_region = st.text_input("AWS_REGION", value=AWS_REGION, placeholder="es-east-1")
+    s3_bucket = st.text_input("S3_BUCKET", value=S3_BUCKET, placeholder="proyecto-ra2-aws-s3-streamlit")
+    s3_key = st.text_input("S3_KEY", value=S3_KEY, placeholder="data/sensores/iabd08_sensores.json")
 
     st.divider()
     st.header("Filtros")
@@ -35,63 +35,80 @@ with st.sidebar:
 
 @st.cache_data(show_spinner=False)
 def load_data(bucket: str, key: str, region: str) -> pd.DataFrame:
-    """Carga datos desde S3 y devuelve un DataFrame listo para usar.
-
-    TODO (obligatorio):
-    1) Leer JSON desde S3 con `load_json_from_s3(bucket, key, region)`
-    2) Convertir a DataFrame con `to_dataframe(...)`
-    3) Asegurar columnas con `ensure_columns(df)`
-    4) Parsear timestamp con `parse_time(df)`
-
-    NOTA: No incluyas credenciales en el código. Usa IAM Role (Variante A) o `aws configure` (Variante B).
-    """
-    # --- TODO: implementa ---
-    raise NotImplementedError("Implementa load_data()")
+    """Carga datos desde S3 y devuelve un DataFrame listo para usar."""
+    # 1) Leer JSON desde S3 con la utilidad proporcionada
+    raw_data = load_json_from_s3(bucket, key, region)
+    
+    # 2) Convertir a DataFrame inicial
+    df = to_dataframe(raw_data)
+    
+    # 3) Asegurar la existencia de las columnas requeridas (sensor_id, temperatura, etc.)
+    df = ensure_columns(df)
+    
+    # 4) Parsear el campo timestamp al formato datetime de Python
+    df = parse_time(df)
+    
+    return df
 
 
 def apply_filters(df: pd.DataFrame, sensor_state: str, temp_min: float, temp_max: float) -> pd.DataFrame:
-    """Aplica filtros del sidebar.
+    """Aplica filtros del sidebar de forma acumulativa."""
+    df_filtered = df.copy()
 
-    TODO (obligatorio):
-    - Si sensor_state != '(todos)', filtra por sensor_state (case-insensitive).
-    - Filtra por temperatura en el rango [temp_min, temp_max].
-    """
-    # --- TODO: implementa ---
-    raise NotImplementedError("Implementa apply_filters()")
+    # Filtro por estado del sensor (case-insensitive) si no es '(todos)'
+    if sensor_state != '(todos)':
+        df_filtered = df_filtered[df_filtered['estado'].str.upper() == sensor_state.upper()]
+
+    # Filtro por rango de temperatura usando el slider
+    df_filtered = df_filtered[
+        (df_filtered['temperatura'] >= temp_min) & 
+        (df_filtered['temperatura'] <= temp_max)
+    ]
+
+    return df_filtered
 
 
 def plot_temperature(df: pd.DataFrame):
-    """Devuelve una figura Plotly de línea: temperatura vs tiempo.
-
-    TODO (obligatorio):
-    - Eje X: timestamp
-    - Eje Y: temperature_c
-    - Color: sensor_id (recomendado)
-    """
-    # --- TODO: implementa ---
-    raise NotImplementedError("Implementa plot_temperature()")
-
+    """Devuelve una figura Plotly de línea: temperatura vs tiempo."""
+    fig = px.line(
+        df,
+        x='timestamp',
+        y='temperatura',
+        color='sensor_id',
+        title="Evolución de Temperatura por Sensor",
+        labels={'temperatura': 'Temperatura (°C)', 'timestamp': 'Fecha y Hora'}
+    )
+    return fig
 
 def plot_co2(df: pd.DataFrame):
-    """Devuelve una figura Plotly de barras: CO2 agregado por sensor.
-
-    TODO (obligatorio):
-    - Agrupa por sensor_id
-    - Métrica: media (recomendado) o suma de co2_ppm
-    """
-    # --- TODO: implementa ---
-    raise NotImplementedError("Implementa plot_co2()")
+    """Devuelve una figura Plotly de barras: CO2 agregado (media) por sensor."""
+    # Agrupamos por sensor y calculamos la media del CO2
+    df_co2 = df.groupby('sensor_id')['co2'].mean().reset_index()
+    
+    fig = px.bar(
+        df_co2,
+        x='sensor_id',
+        y='co2',
+        title="Nivel Medio de CO₂ por Sensor",
+        labels={'co2': 'CO₂ (ppm)', 'sensor_id': 'ID del Sensor'},
+        color='sensor_id'
+    )
+    return fig
 
 
 def render_map(df: pd.DataFrame):
-    """Muestra el mapa con st.map() usando lat/lon.
-
-    TODO (obligatorio):
-    - Quita filas sin lat/lon
-    - Llama a st.map(...)
-    """
-    # --- TODO: implementa ---
-    raise NotImplementedError("Implementa render_map()")
+    """Muestra el mapa con st.map() usando lat/lon."""
+    # Eliminamos registros que no tengan coordenadas válidas
+    map_data = df.dropna(subset=['latitud', 'longitud'])
+    
+    # Streamlit requiere que las columnas se llamen 'lat' y 'lon' (o latitude/longitude)
+    map_data = map_data.rename(columns={
+        'latitud': 'lat',
+        'longitud': 'lon'
+    })
+    
+    # Llamada a la función nativa de Streamlit para mapas
+    st.map(map_data)
 
 
 # --- Control recarga cache ---
